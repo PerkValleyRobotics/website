@@ -19,8 +19,12 @@ def task_page(): # Returns html
     return render_template("task.html", the_title="PV Robotics Tasks")
 
 @app.route("/CodeTeamBestTeam")
-def code_best():
+def code_best(): # Returns html
     return render_template("home.html", the_title="Code Team Best Team")
+
+@app.route("/Privacy")
+def privacy(): # Returns html
+    return render_template("privacy.html", the_title="Privacy Policy")
 
 if __name__ == "__main__":
     app.run(debug=True)
