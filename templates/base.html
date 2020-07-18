@@ -3,8 +3,40 @@
 <html>
   <head>
       <title>{{ the_title }}</title>
+      <style>
+        body {
+            margin: 0;
+            background: #f67d21;
+            color: white;
+        }
+        ul {
+          width:100%;
+          overflow:hidden;
+          height:44px;
+          list-style-type: none;
+          margin: 0;
+          padding: 5px;
+          background: #73381d;
+        }
+        li {
+            display: inline;
+        }
+        a {
+            font-size: 30px;
+            color: white;
+        }
+      </style>
   </head>
+
   <body>
+    <ul>
+
+            <li><img src="Pics/logo.jpeg" alt="7414 Logo" style="height: 44px; width: 44px;"></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/Tasks">Tasks</a></li>
+            <li><a href="/Calendar">Calendar</a></li>
+            <li><a href="/About">About</a></li>
+    </ul>
       {% block body %}
 
       {% endblock %}
