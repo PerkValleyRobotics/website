@@ -15,18 +15,17 @@ class updateForm(FlaskForm):
     submit = SubmitField('Submit')
 posts = []
 
+@app.route("/FAQ")
+def FAQ_page(): # Returns html
+    return render_template("FAQ.html", the_title="FAQ")
+
+@app.route("/Volunteer")
+def Volunteer_page(): # Returns html
+    return render_template("Volunteer.html", the_title="Volunteer")
 
 @app.route("/")
 def home_page(): # Returns html
     return render_template("home.html", the_title="PV Robotics Home")
-
-@app.route("/About")
-def about_page(): # Returns html
-    return render_template("about.html", the_title="PV Robotics About")
-
-@app.route("/Calendar")
-def calendar_page(): # Returns html
-    return render_template("calendar.html", the_title="PV Robotics Calendar")
 
 @app.route("/Tasks")
 def task_page(): # Returns html
