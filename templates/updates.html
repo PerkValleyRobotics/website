@@ -4,9 +4,20 @@
 <class>
     <center>
         <p><a href = "/Post">Post</a></p>
+        <select onchange="window.location.href=this.options[this.selectedIndex].value;">
+            <option value="/Updates?tag=All">Choose a Filter</option>
+            <option value="/Updates?tag=All">Remove Filter</option>
+            <option value="/Updates?tag=Code">Code</option>
+            <option value="/Updates?tag=Mechanical">Mechanical</option>
+            <option value="/Updates?tag=Electrical">Electrical</option>
+            <option value="/Updates?tag=Business">Business</option>
+            <option value="/Updates?tag=Other">Other</option>
+        </select>
         {% for post in posts %}
-        <div style="background: #73381d; margin: 10px; padding:10px; width: 42.0%; text-align: left;">
-        <h1>{{ post.author }}</h1> <h2>{{ post.body }}</h2>
+
+        <div style="background: #73381d; margin: 5px; padding:5px; width: 42.0%; text-align: left;">
+            <p style="font-size: 15px; line-height:5px; background:{{ post.color }}; padding:10px; width: {{ post.em }}em; color:black;"><b>{{ post.tag }}</b></p>
+        <h1 style="font-size: 50px; line-height:10px;">{{ post.author }}</h1> <br><h2 style="font-size: 30px; line-height:10px;">{{ post.body }}</h2>
         </div>
         {% endfor %}
     </center>

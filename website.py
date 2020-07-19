@@ -32,16 +32,38 @@ def calendar_page(): # Returns html
 def task_page(): # Returns html
     return render_template("task.html", the_title="PV Robotics Tasks")
 
-@app.route("/Updates")
+@app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
-    return render_template('updates.html', posts=posts, the_title="PV Robotics Updates")
+    tag = request.args.get("tag", '')
+    p = []
+    if tag == "All" or tag == "":
+        p = posts
+    else:
+        for i in range(len(posts)):
+            if posts[i]["tag"] == tag:
+                p.append(posts[i])
+
+    return render_template('updates.html', posts=p, the_title="PV Robotics Updates")
 
 @app.route('/Post', methods=["GET","POST"])
-def login():
+def post():
     form = updateForm()
     if form.validate_on_submit():
         flash('Posted')
-        posts.append({"author" : form.name.data, "body" : form.text.data})
+        tag = request.form.get('tag')
+
+        def switch(argument):
+            switcher = {
+                "Code": "DodgerBlue",
+                "Mechanical": "Tomato",
+                "Electrical": "Orange",
+                "Business": "MediumSeaGreen",
+                "Other": "grey",
+            }
+            return switcher.get(argument, "white")
+        color = switch(tag)
+        em = len(tag) / 2
+        posts.insert(0,{"author" : form.name.data, "body" : form.text.data, "tag" : request.form.get('tag'), "color" : color, "em" : em})
         return redirect('/Updates')
     return render_template('post.html', title='Sign In', form=form)
 
