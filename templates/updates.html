@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block body %}
+<class>
+    <center>
+        <p><a href = "/Post">Post</a></p>
+        {% for post in posts %}
+        <div style="background: #73381d; margin: 10px; padding:10px; width: 42.0%; text-align: left;">
+        <h1>{{ post.author }}</h1> <h2>{{ post.body }}</h2>
+        </div>
+        {% endfor %}
+    </center>
+</class>
+
+{% endblock %}
