@@ -53,5 +53,9 @@ def code_best(): # Returns html
 def privacy(): # Returns html
     return render_template("privacy.html", the_title="Privacy Policy")
 
+@app.route("/UnderConstruction")
+def under_construction(): # Returns html
+    return render_template("underConstruction.html", the_title="Work in Progress")
+
 if __name__ == "__main__":
     app.run(debug=True)
