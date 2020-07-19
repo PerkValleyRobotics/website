@@ -46,8 +46,12 @@ def login():
     return render_template('post.html', title='Sign In', form=form)
 
 @app.route("/CodeTeamBestTeam")
-def code_best():
+def code_best(): # Returns html
     return render_template("home.html", the_title="Code Team Best Team")
+
+@app.route("/Privacy")
+def privacy(): # Returns html
+    return render_template("privacy.html", the_title="Privacy Policy")
 
 if __name__ == "__main__":
     app.run(debug=True)
