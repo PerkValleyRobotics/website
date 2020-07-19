@@ -53,5 +53,9 @@ def code_best(): # Returns html
 def privacy(): # Returns html
     return render_template("privacy.html", the_title="Privacy Policy")
 
+@app.route("/Login")
+def sign_in():
+    return render_template("login.html", the_title="Test")
+
 if __name__ == "__main__":
     app.run(debug=True)
