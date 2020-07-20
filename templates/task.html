@@ -10,7 +10,7 @@
                 <label name="code"><u><b>Add A Task</b></u></label>
                 <input type="text" name="code" id="code">
             </form>
-            <ul style="height: auto;">
+            <ul style="height: auto; width: 40vw;">
                 {% for task in codeTasks %}
 
                 <li style="color: {{ task.color }}; font-size:20px; float:none; display:block;"> {{ task.task }}<a href="/Tasks?claim=code&num={{ task.taskNum }}" style="font-size:15px; float:right; clear: right; padding: 5px; margin: 0px;">{{ task.claimText }}</a></li>
