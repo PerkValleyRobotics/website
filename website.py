@@ -1,3 +1,13 @@
+"""
+
+Imports:
+
+flask: pip install flask
+flask_wtf: pip install flask-wtf
+
+"""
+
+import pickle
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
@@ -13,22 +23,39 @@ class updateForm(FlaskForm):
     text = StringField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+def loadData(file, default):
+    try:
+        f = open("data/"+file, "rb")
+        data = pickle.load(f)
+        f.close()
+        return data
+    except:
+        return default
 
-posts = []
-numTasks = 0
-codeTasks = []
+def saveData(file, data):
+    f = open("data/"+file, "wb")
+    pickle.dump(data, f)
+    f.close()
+
+posts = loadData("posts.txt", [])
+numTasks = loadData("tasks.txt", 0)
+codeTasks = loadData("codeTasks.txt", [])
+
 
 @app.route("/FAQ")
 def FAQ_page(): # Returns html
     return render_template("FAQ.html", the_title="FAQ")
 
+
 @app.route("/Volunteer")
 def Volunteer_page(): # Returns html
     return render_template("Volunteer.html", the_title="Volunteer")
 
+
 @app.route("/")
 def home_page(): # Returns html
     return render_template("home.html", the_title="PV Robotics Home")
+
 
 @app.route("/Tasks", methods=["POST"])
 def task_form():
@@ -39,11 +66,15 @@ def task_form():
     if codeForm and not codeForm == "":
         codeTasks.append({"color" : "Tomato", "task" : codeForm, "taskNum" : str(numTasks +1), "claimText" : "Claim Task", "sort" : 1})
         numTasks += 1
+        saveData("codeTasks.txt", codeTasks)
+        saveData("tasks.txt", numTasks)
         return redirect('/Tasks')
+
 
 @app.route("/Tasks", methods=["GET"])
 def task_page(): # Returns html
     global codeTasks
+
     teamClaim = request.args.get("claim", '')
     taskNum = request.args.get("num", '')
 
@@ -61,15 +92,20 @@ def task_page(): # Returns html
                         codeTasks[i]["sort"] = 2
                     else:
                         codeTasks.pop(i)
+                        saveData("codeTasks.txt", codeTasks)
             except:
                 pass
 
     return render_template("task.html", codeTasks= sorted(codeTasks, key=lambda x: x["sort"]), the_title="PV Robotics Tasks")
 
+
 @app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
+    global posts
+
     tag = request.args.get("tag", '')
     p = []
+
     if tag == "All" or tag == "":
         p = posts
     else:
@@ -78,6 +114,7 @@ def updates_page(): # Returns html
                 p.append(posts[i])
 
     return render_template('updates.html', posts=p, the_title="PV Robotics Updates")
+
 
 @app.route('/Post', methods=["GET","POST"])
 def post():
@@ -99,20 +136,25 @@ def post():
         color = switch(tag)
         ch = len(tag) + .5
         posts.insert(0,{"author" : form.name.data, "body" : form.text.data, "tag" : request.form.get('tag'), "color" : color, "ch" : ch})
+        saveData("posts.txt", posts)
         return redirect('/Updates')
     return render_template('post.html', title='Sign In', form=form)
+
 
 @app.route("/CodeTeamBestTeam")
 def code_best(): # Returns html
     return render_template("home.html", the_title="Code Team Best Team")
 
+
 @app.route("/Privacy")
 def privacy(): # Returns html
     return render_template("privacy.html", the_title="Privacy Policy")
 
+
 @app.route("/UnderConstruction")
 def under_construction(): # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
