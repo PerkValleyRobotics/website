@@ -8,40 +8,97 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 
-
 class updateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     text = StringField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
-posts = []
 
+
+posts = []
+numTasks = 0
+codeTasks = []
+
+@app.route("/FAQ")
+def FAQ_page(): # Returns html
+    return render_template("FAQ.html", the_title="FAQ")
+
+@app.route("/Volunteer")
+def Volunteer_page(): # Returns html
+    return render_template("Volunteer.html", the_title="Volunteer")
 
 @app.route("/")
 def home_page(): # Returns html
     return render_template("home.html", the_title="PV Robotics Home")
 
-@app.route("/About")
-def about_page(): # Returns html
-    return render_template("about.html", the_title="PV Robotics About")
+@app.route("/Tasks", methods=["POST"])
+def task_form():
+    global numTasks
+    global codeTasks
 
-@app.route("/Calendar")
-def calendar_page(): # Returns html
-    return render_template("calendar.html", the_title="PV Robotics Calendar")
+    codeForm = request.form['code']
+    if codeForm and not codeForm == "":
+        codeTasks.append({"color" : "Tomato", "task" : codeForm, "taskNum" : str(numTasks +1), "claimText" : "Claim Task", "sort" : 1})
+        numTasks += 1
+        return redirect('/Tasks')
 
-@app.route("/Tasks")
+@app.route("/Tasks", methods=["GET"])
 def task_page(): # Returns html
-    return render_template("task.html", the_title="PV Robotics Tasks")
+    global codeTasks
+    teamClaim = request.args.get("claim", '')
+    taskNum = request.args.get("num", '')
 
-@app.route("/Updates")
+    if teamClaim == "code":
+        for i in range(len(codeTasks)):
+            try:
+                if codeTasks[i]["taskNum"] == taskNum:
+                    if codeTasks[i]["color"] == "Tomato":
+                        codeTasks[i]["color"] = "Orange"
+                        codeTasks[i]["claimText"] = "Finish"
+                        codeTasks[i]["sort"] = 0
+                    elif codeTasks[i]["color"] == "Orange":
+                        codeTasks[i]["color"] = "MediumSeaGreen"
+                        codeTasks[i]["claimText"] = "Remove"
+                        codeTasks[i]["sort"] = 2
+                    else:
+                        codeTasks.pop(i)
+            except:
+                pass
+
+    return render_template("task.html", codeTasks= sorted(codeTasks, key=lambda x: x["sort"]), the_title="PV Robotics Tasks")
+
+@app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
-    return render_template('updates.html', posts=posts, the_title="PV Robotics Updates")
+    tag = request.args.get("tag", '')
+    p = []
+    if tag == "All" or tag == "":
+        p = posts
+    else:
+        for i in range(len(posts)):
+            if posts[i]["tag"] == tag:
+                p.append(posts[i])
+
+    return render_template('updates.html', posts=p, the_title="PV Robotics Updates")
 
 @app.route('/Post', methods=["GET","POST"])
-def login():
+def post():
+    global posts
     form = updateForm()
     if form.validate_on_submit():
         flash('Posted')
-        posts.append({"author" : form.name.data, "body" : form.text.data})
+        tag = request.form.get('tag')
+
+        def switch(argument):
+            switcher = {
+                "Code": "DodgerBlue",
+                "Mechanical": "Tomato",
+                "Electrical": "Orange",
+                "Business": "MediumSeaGreen",
+                "Other": "grey",
+            }
+            return switcher.get(argument, "white")
+        color = switch(tag)
+        ch = len(tag) + .5
+        posts.insert(0,{"author" : form.name.data, "body" : form.text.data, "tag" : request.form.get('tag'), "color" : color, "ch" : ch})
         return redirect('/Updates')
     return render_template('post.html', title='Sign In', form=form)
 
@@ -53,6 +110,9 @@ def code_best(): # Returns html
 def privacy(): # Returns html
     return render_template("privacy.html", the_title="Privacy Policy")
 
+@app.route("/UnderConstruction")
+def under_construction(): # Returns html
+    return render_template("underConstruction.html", the_title="Work in Progress")
 @app.route("/Login")
 def sign_in():
     return render_template("login.html", the_title="Test")
