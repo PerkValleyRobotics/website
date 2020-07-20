@@ -39,6 +39,7 @@ def task_form():
     if codeForm and not codeForm == "":
         codeTasks.append({"color" : "Tomato", "task" : codeForm, "taskNum" : str(numTasks +1), "claimText" : "Claim Task", "sort" : 1})
         numTasks += 1
+
         return redirect('/Tasks')
 
 @app.route("/Tasks", methods=["GET"])
@@ -64,7 +65,7 @@ def task_page(): # Returns html
             except:
                 pass
 
-    return render_template("task.html", codeTasks= sorted(codeTasks, key=lambda x: x["sort"]), the_title="PV Robotics Tasks")
+    return render_template("task.html", codeTasks=sorted(codeTasks, key=lambda x: x["sort"]), the_title="PV Robotics Tasks")
 
 @app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
