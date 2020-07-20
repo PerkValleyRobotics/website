@@ -8,15 +8,15 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 
 
-
 class updateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     text = StringField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
-posts = []
 
-codeTasks = [{"color" : "Tomato", "task" : "Build website", "taskNum" : "1", "claimText" : "Claim Task"}, {"color" : "Tomato", "task" : "implement scouting app", "taskNum" : "2", "claimText" : "Claim Task"}]
+posts = []
+numTasks = 0
+codeTasks = []
 
 @app.route("/FAQ")
 def FAQ_page(): # Returns html
@@ -30,23 +30,41 @@ def Volunteer_page(): # Returns html
 def home_page(): # Returns html
     return render_template("home.html", the_title="PV Robotics Home")
 
-@app.route("/Tasks")
+@app.route("/Tasks", methods=["POST"])
+def task_form():
+    global numTasks
+    global codeTasks
+
+    codeForm = request.form['code']
+    if codeForm and not codeForm == "":
+        codeTasks.append({"color" : "Tomato", "task" : codeForm, "taskNum" : str(numTasks +1), "claimText" : "Claim Task", "sort" : 1})
+        numTasks += 1
+        return redirect('/Tasks')
+
+@app.route("/Tasks", methods=["GET"])
 def task_page(): # Returns html
+    global codeTasks
     teamClaim = request.args.get("claim", '')
     taskNum = request.args.get("num", '')
+
     if teamClaim == "code":
         for i in range(len(codeTasks)):
             try:
                 if codeTasks[i]["taskNum"] == taskNum:
                     if codeTasks[i]["color"] == "Tomato":
-                        codeTasks[i]["color"] = "yellow"
-                    elif codeTasks[i]["color"] == "yellow":
-                        codeTasks[i]["color"] = "darkgreen"
+                        codeTasks[i]["color"] = "Orange"
+                        codeTasks[i]["claimText"] = "Finish"
+                        codeTasks[i]["sort"] = 0
+                    elif codeTasks[i]["color"] == "Orange":
+                        codeTasks[i]["color"] = "MediumSeaGreen"
+                        codeTasks[i]["claimText"] = "Remove"
+                        codeTasks[i]["sort"] = 2
                     else:
                         codeTasks.pop(i)
             except:
                 pass
-    return render_template("task.html", codeTasks=codeTasks, sthe_title="PV Robotics Tasks")
+
+    return render_template("task.html", codeTasks= sorted(codeTasks, key=lambda x: x["sort"]), the_title="PV Robotics Tasks")
 
 @app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
@@ -63,6 +81,7 @@ def updates_page(): # Returns html
 
 @app.route('/Post', methods=["GET","POST"])
 def post():
+    global posts
     form = updateForm()
     if form.validate_on_submit():
         flash('Posted')
