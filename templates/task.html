@@ -4,6 +4,16 @@
 <class>
     <center>
         <h2>Welcome to our task page!</h2>
+        <div class="BODY" style="text-align:left;">
+            <h2 style="background: DodgerBlue; padding: 10px; color: lightgray; text-align: left; width: 4.5ch;"><b>Code</b></h2>
+            <ul>
+                {% for task in codeTasks %}
+
+                <li style="color: {{ task.color }}; font-size:20px; float:none; display:block;"> {{ task.task }}<a href="/Tasks?claim=code&num={{ task.taskNum }}" style="font-size:15px; float:right; clear: right; padding: 5px; margin: 0px;">{{ task.claimText }}</a></li>
+
+                {% endfor %}
+            </ul>
+        </div>
     </center>
 </class>
 

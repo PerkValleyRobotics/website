@@ -13,7 +13,10 @@ class updateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     text = StringField('Text', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
 posts = []
+
+codeTasks = [{"color" : "Tomato", "task" : "Build website", "taskNum" : "1", "claimText" : "Claim Task"}, {"color" : "Tomato", "task" : "implement scouting app", "taskNum" : "2", "claimText" : "Claim Task"}]
 
 @app.route("/FAQ")
 def FAQ_page(): # Returns html
@@ -29,7 +32,21 @@ def home_page(): # Returns html
 
 @app.route("/Tasks")
 def task_page(): # Returns html
-    return render_template("task.html", the_title="PV Robotics Tasks")
+    teamClaim = request.args.get("claim", '')
+    taskNum = request.args.get("num", '')
+    if teamClaim == "code":
+        for i in range(len(codeTasks)):
+            try:
+                if codeTasks[i]["taskNum"] == taskNum:
+                    if codeTasks[i]["color"] == "Tomato":
+                        codeTasks[i]["color"] = "yellow"
+                    elif codeTasks[i]["color"] == "yellow":
+                        codeTasks[i]["color"] = "darkgreen"
+                    else:
+                        codeTasks.pop(i)
+            except:
+                pass
+    return render_template("task.html", codeTasks=codeTasks, sthe_title="PV Robotics Tasks")
 
 @app.route("/Updates", methods=["GET","POST"])
 def updates_page(): # Returns html
