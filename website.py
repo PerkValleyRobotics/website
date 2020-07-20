@@ -61,8 +61,8 @@ def post():
             }
             return switcher.get(argument, "white")
         color = switch(tag)
-        em = len(tag) / 2
-        posts.insert(0,{"author" : form.name.data, "body" : form.text.data, "tag" : request.form.get('tag'), "color" : color, "em" : em})
+        ch = len(tag) + .5
+        posts.insert(0,{"author" : form.name.data, "body" : form.text.data, "tag" : request.form.get('tag'), "color" : color, "ch" : ch})
         return redirect('/Updates')
     return render_template('post.html', title='Sign In', form=form)
 
