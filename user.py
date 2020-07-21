@@ -2,10 +2,7 @@ from flask_login import UserMixin
 import mysql.connector
 
 class User(UserMixin):
-    dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
-                "user": "theonlycakes",
-                "password": "3O2W$72l8d",
-                "database": "theonlycakes$website", }
+
 
     def __init__(self, id_, name, email, profile_pic):
         self.id = id_
@@ -16,6 +13,10 @@ class User(UserMixin):
 
     @staticmethod
     def get(user_id):
+        dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
+                "user": "theonlycakes",
+                "password": "3O2W$72l8d",
+                "database": "theonlycakes$website", }
         conn = mysql.connector.connect(**dbconfig)
         cursor = conn.cursor()
         user = cursor.execute(
@@ -35,6 +36,10 @@ class User(UserMixin):
 
     @staticmethod
     def create(id_, name, email, profile_pic):
+        dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
+                "user": "theonlycakes",
+                "password": "3O2W$72l8d",
+                "database": "theonlycakes$website", }
         conn = mysql.connector.connect(**dbconfig)
         cursor = conn.cursor()
         cursor.execute(

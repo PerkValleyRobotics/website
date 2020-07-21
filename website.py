@@ -205,7 +205,7 @@ def logout():
 
 
 @app.route("/login/callback")
-def callback(user=None):
+def callback(user1=None):
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     # Find out what URL to hit to get tokens that allow you to ask for
@@ -246,7 +246,7 @@ def callback(user=None):
         return "User email not available or not verified by Google.", 400
     # Create a user in your db with the information provided
     # by Google
-    user = user.User(
+    user1 = user.User(
         id_=unique_id, name=users_name, email=users_email, profile_pic=picture
     )
 
@@ -255,11 +255,11 @@ def callback(user=None):
         user.User.create(unique_id, users_name, users_email, picture)
 
     # Begin user session by logging the user in
-    login_user(user)
+    login_user(user1)
 
     # Send user back to homepage
     return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, ssl_context='adhoc')
