@@ -18,10 +18,9 @@ class User(UserMixin):
                 "password": "3O2W$72l8d",
                 "database": "theonlycakes$website", }
         conn = mysql.connector.connect(**dbconfig)
-        cursor = conn.cursor()
-        user = cursor.execute(
-            "SELECT * FROM user WHERE id = ?", (user_id,)
-        ).fetchone()
+        cursor = conn.cursor(buffered=True)
+        user = cursor.execute("SELECT * FROM user WHERE id = %s", (user_id,)
+        )
         if not user:
             cursor.close()
             conn.close()
