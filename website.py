@@ -6,7 +6,16 @@ app.config['SECRET_KEY'] = 'you-will-never-guess'
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
-
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_required,
+    login_user,
+    logout_user,
+)
+from oauthlib.oauth2 import WebApplicationClient
+import requests
+from user import User
 
 class updateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
@@ -14,10 +23,22 @@ class updateForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+
 posts = []
 numTasks = 0
 codeTasks = []
 
+#Code for Logining in a user
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET"
+GOOGLE_DISCOVERY_URL = (
+    "https://accounts.google.com/.well-known/openid-configuration"
+)
+
+#Code for Webpages
 @app.route("/FAQ")
 def FAQ_page(): # Returns html
     return render_template("FAQ.html", the_title="FAQ")
@@ -113,9 +134,28 @@ def privacy(): # Returns html
 @app.route("/UnderConstruction")
 def under_construction(): # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
-@app.route("/Login")
-def sign_in():
-    return render_template("login.html", the_title="Test")
+
+@app.route("/login")
+def login():
+    # Find out what URL to hit for Google login
+    google_provider_cfg = get_google_provider_cfg()
+    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+
+    # Use library to construct the request for Google login and provide
+    # scopes that let you retrieve user's profile from Google
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=request.base_url + "/callback",
+        scope=["openid", "email", "profile"],
+    )
+    return redirect(request_uri)
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
