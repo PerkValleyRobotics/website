@@ -1,3 +1,5 @@
+from http import client
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
@@ -15,7 +17,7 @@ from flask_login import (
 )
 from oauthlib.oauth2 import WebApplicationClient
 import requests
-from user import User
+import user
 
 class updateForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
@@ -27,16 +29,6 @@ class updateForm(FlaskForm):
 posts = []
 numTasks = 0
 codeTasks = []
-
-#Code for Logining in a user
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID"
-GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET"
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
 
 #Code for Webpages
 @app.route("/FAQ")
@@ -134,6 +126,22 @@ def privacy(): # Returns html
 @app.route("/UnderConstruction")
 def under_construction(): # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
+
+#Code for Logining in a user
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID"
+GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET"
+GOOGLE_DISCOVERY_URL = (
+    "https://accounts.google.com/.well-known/openid-configuration"
+)
+
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return user.User.get(user_id)
 
 @app.route("/login")
 def login():
