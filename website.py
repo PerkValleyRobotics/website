@@ -67,28 +67,70 @@ def task_page():  # Returns html
     taskNum = request.args.get("num", '')
 
     if teamClaim == "code":
-        for i in range(len(codeTasks)):
-            try:
-                if codeTasks[i]["taskNum"] == taskNum:
-                    if codeTasks[i]["color"] == "Tomato":
-                        codeTasks[i]["color"] = "Orange"
-                        codeTasks[i]["claimText"] = "Finish"
-                        codeTasks[i]["sort"] = 0
-                    elif codeTasks[i]["color"] == "Orange":
-                        codeTasks[i]["color"] = "MediumSeaGreen"
-                        codeTasks[i]["claimText"] = "Remove"
-                        codeTasks[i]["sort"] = 2
-                    else:
-                        codeTasks.pop(i)
-            except:
-                pass
+        for task in codeTasks:
+            if task["id"] == int(taskID):
+                switcher = {
+                    1: 0,
+                    0: 2,
+                    2: 3,
+                }
+                newStatus = switcher.get(task["status"], "")
+                updateData("codeTasks", newStatus, task["id"])
+        return redirect('/Tasks#code')
+    elif teamClaim == "mechanical":
+        for task in mechanicalTasks:
+            if task["id"] == int(taskID):
+                switcher = {
+                    1: 0,
+                    0: 2,
+                    2: 3,
+                }
+                newStatus = switcher.get(task["status"], "")
+                updateData("mechanicalTasks", newStatus, task["id"])
+        return redirect('/Tasks#mechanical')
+    elif teamClaim == "electrical":
+        for task in electricalTasks:
+            if task["id"] == int(taskID):
+                switcher = {
+                    1: 0,
+                    0: 2,
+                    2: 3,
+                }
+                newStatus = switcher.get(task["status"], "")
+                updateData("electricalTasks", newStatus, task["id"])
+        return redirect('/Tasks#electrical')
+    elif teamClaim == "business":
+        for task in businessTasks:
+            if task["id"] == int(taskID):
+                switcher = {
+                    1: 0,
+                    0: 2,
+                    2: 3,
+                }
+                newStatus = switcher.get(task["status"], "")
+                updateData("businessTasks", newStatus, task["id"])
+        return redirect('/Tasks#business')
+    else:
+        return render_template("task.html",
+                               codeTasks= sorted(codeTasks, key=lambda x: x["status"]),
+                               mechanicalTasks= sorted(mechanicalTasks, key=lambda x: x["status"]),
+                               electricalTasks= sorted(electricalTasks, key=lambda x: x["status"]),
+                               businessTasks= sorted(businessTasks, key=lambda x: x["status"]),
+                               the_title="PV Robotics Tasks")
+# Hello
+"""@app.route('/Tasks/<team>/<taskID>')
+def taskPage(team, taskID):
+    if team == "code":
+        codeTasks = getData("codeTasks")
+        for task in codeTasks:
+            if task["id"] == int(id):
+                page = task
+                break
 
-    return render_template("task.html", codeTasks=sorted(codeTasks, key=lambda x: x["sort"]),
-                           the_title="PV Robotics Tasks")
+    return render_template('TaskPage.html', page=page, updates=updates, the_title=page["task"])"""
 
-
-@app.route("/Updates", methods=["GET", "POST"])
-def updates_page():  # Returns html
+@app.route("/Updates", methods=["GET","POST"])
+def updates_page(): # Returns html
     tag = request.args.get("tag", '')
     p = []
     if tag == "All" or tag == "":
