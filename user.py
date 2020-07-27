@@ -1,5 +1,7 @@
 from flask_login import UserMixin
 import mysql.connector
+import siteInfo
+import json
 
 class User(UserMixin):
 
@@ -10,13 +12,14 @@ class User(UserMixin):
         self.email = email
         self.profile_pic = profile_pic
 
+    dbconfig = {"host": siteInfo.databasehost(),
+                "user": siteInfo.databaseuser(),
+                "password": siteInfo.databasepassword(),
+                "database": siteInfo.database, }
 
     @staticmethod
     def get(user_id):
-        dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
-                "user": "theonlycakes",
-                "password": "3O2W$72l8d",
-                "database": "theonlycakes$website", }
+
         conn = mysql.connector.connect(**dbconfig)
         cursor = conn.cursor(buffered=True)
         cursor.execute("SELECT * FROM user WHERE id = %s", (user_id,)
@@ -36,10 +39,6 @@ class User(UserMixin):
 
     @staticmethod
     def create(id_, name, email, profile_pic):
-        dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
-                "user": "theonlycakes",
-                "password": "3O2W$72l8d",
-                "database": "theonlycakes$website", }
         conn = mysql.connector.connect(**dbconfig)
         cursor = conn.cursor()
         cursor.execute(

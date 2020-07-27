@@ -1,14 +1,10 @@
+import os
 from http import client
 
 import mysql
+import json
+import requests
 from flask import Flask, render_template, request, redirect, url_for, flash, json
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'you-will-never-guess'
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired
 from flask_login import (
     LoginManager,
     current_user,
@@ -16,9 +12,16 @@ from flask_login import (
     login_user,
     logout_user,
 )
+from flask_wtf import FlaskForm
 from oauthlib.oauth2 import WebApplicationClient
-import requests
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
+
 import user
+import siteInfo
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
 
 
 class updateForm(FlaskForm):
@@ -31,6 +34,11 @@ posts = []
 numTasks = 0
 codeTasks = []
 
+#Calls for data base configuration
+dbconfig = {"host": siteInfo.databasehost(),
+            "user": siteInfo.databaseuser(),
+            "password": siteInfo.databasepassword(),
+            "database": siteInfo.database(), }
 
 # Code for Webpages
 @app.route("/FAQ")
@@ -47,16 +55,9 @@ def Volunteer_page():  # Returns html
 def home_page():  # Returns html
     return render_template("home.html", the_title="PV Robotics Home")
 
-dbconfig = {"host": "theonlycakes.mysql.pythonanywhere-services.com",
-                "user": "theonlycakes",
-                "password": "3O2W$72l8d",
-                "database": "theonlycakes$website", }
-
 
 def getData(table):
-    database = mysql.connector.connect(
-        **dbconfig
-    )
+    database = mysql.connector.connect(**dbconfig)
     cursor = database.cursor(dictionary=True)
     cursor.execute("select * from " + table)
     req = cursor.fetchall()
@@ -64,11 +65,10 @@ def getData(table):
     database.close()
     return req
 
+
 def updateData(table, status, id):
-    database = mysql.connector.connect(
-        **dbconfig
-    )
-    sql = "UPDATE " + table +" SET status = " + str(status) + " WHERE id = " + str(id)
+    database = mysql.connector.connect(**dbconfig)
+    sql = "UPDATE " + table + " SET status = " + str(status) + " WHERE id = " + str(id)
 
     cursor = database.cursor()
     cursor.execute(sql)
@@ -77,11 +77,10 @@ def updateData(table, status, id):
     cursor.close()
     database.close()
 
+
 def saveData(table, args):
-    database = mysql.connector.connect(
-        **dbconfig
-    )
-    sql = "INSERT INTO " + table +" (task, status) VALUES (%s, %s)"
+    database = mysql.connector.connect(**dbconfig)
+    sql = "INSERT INTO " + table + " (task, status) VALUES (%s, %s)"
 
     cursor = database.cursor()
     cursor.execute(sql, args)
@@ -89,6 +88,7 @@ def saveData(table, args):
     database.commit()
     cursor.close()
     database.close()
+
 
 @app.route("/Tasks", methods=["POST"])
 def task_form():
@@ -155,8 +155,9 @@ def task_form():
     except:
         pass
 
+
 @app.route("/Tasks", methods=["GET"])
-def task_page(): # Returns html
+def task_page():  # Returns html
     global codeTasks
     teamClaim = request.args.get("claim", '')
     taskID = request.args.get("id", '')
@@ -188,7 +189,8 @@ def task_page(): # Returns html
 
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
-            codeTasks.append({"id": task["id"], "task" : task["task"], "color": color, "claimText": claimText, "status" : task["status"]})
+            codeTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
+                              "status": task["status"]})
 
     for task in mechanicalDB:
         if not task["status"] == 3:
@@ -205,7 +207,8 @@ def task_page(): # Returns html
 
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
-            mechanicalTasks.append({"id": task["id"], "task" : task["task"], "color": color, "claimText": claimText, "status" : task["status"]})
+            mechanicalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
+                                    "status": task["status"]})
 
     for task in electricalDB:
         if not task["status"] == 3:
@@ -222,7 +225,8 @@ def task_page(): # Returns html
 
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
-            electricalTasks.append({"id": task["id"], "task" : task["task"], "color": color, "claimText": claimText, "status" : task["status"]})
+            electricalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
+                                    "status": task["status"]})
 
     for task in businessDB:
         if not task["status"] == 3:
@@ -239,7 +243,8 @@ def task_page(): # Returns html
 
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
-            businessTasks.append({"id": task["id"], "task" : task["task"], "color": color, "claimText": claimText, "status" : task["status"]})
+            businessTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
+                                  "status": task["status"]})
 
     if teamClaim == "code":
         for task in codeTasks:
@@ -287,11 +292,13 @@ def task_page(): # Returns html
         return redirect('/Tasks#business')
     else:
         return render_template("task.html",
-                               codeTasks= sorted(codeTasks, key=lambda x: x["status"]),
-                               mechanicalTasks= sorted(mechanicalTasks, key=lambda x: x["status"]),
-                               electricalTasks= sorted(electricalTasks, key=lambda x: x["status"]),
-                               businessTasks= sorted(businessTasks, key=lambda x: x["status"]),
-                               the_title="PV Robotics Tasks")# Hello
+                               codeTasks=sorted(codeTasks, key=lambda x: x["status"]),
+                               mechanicalTasks=sorted(mechanicalTasks, key=lambda x: x["status"]),
+                               electricalTasks=sorted(electricalTasks, key=lambda x: x["status"]),
+                               businessTasks=sorted(businessTasks, key=lambda x: x["status"]),
+                               the_title="PV Robotics Tasks")  # Hello
+
+
 """@app.route('/Tasks/<team>/<taskID>')
 def taskPage(team, taskID):
     if team == "code":
@@ -303,8 +310,9 @@ def taskPage(team, taskID):
 
     return render_template('TaskPage.html', page=page, updates=updates, the_title=page["task"])"""
 
-@app.route("/Updates", methods=["GET","POST"])
-def updates_page(): # Returns html
+
+@app.route("/Updates", methods=["GET", "POST"])
+def updates_page(): # Returns HTML
     tag = request.args.get("tag", '')
     p = []
     if tag == "All" or tag == "":
@@ -363,9 +371,9 @@ def under_construction():  # Returns html
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# This needs to be changed when added to site with actual credentials
-GOOGLE_CLIENT_ID = "GOOGLE_CLIENT_ID"
-GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET"
+# Credentials found in siteInfo
+GOOGLE_CLIENT_ID = siteInfo.googleid()
+GOOGLE_CLIENT_SECRET = siteInfo.googlesecret()
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
