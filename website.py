@@ -390,19 +390,12 @@ def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
-@app.route("/test")
+@app.route("/Login")
 def index():
     if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<img src="{}" alt="Google profile pic"></img></div>'
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.name, current_user.email, current_user.profile_pic
-            )
-        )
+        return url_for(home_page)
     else:
-        return '<a class="button" href="/login">Google Login</a>'
+        return render_template("gSignIn.html", the_title="Sign In")
 
 
 @app.route("/login")
