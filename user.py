@@ -1,7 +1,11 @@
 from flask_login import UserMixin
 import mysql.connector
 import siteInfo
-import json
+
+dbconfig = {"host": siteInfo.databasehost(),
+                "user": siteInfo.databaseuser(),
+                "password": siteInfo.databasepassword(),
+                "database": siteInfo.database(), }
 
 class User(UserMixin):
 
@@ -11,11 +15,6 @@ class User(UserMixin):
         self.name = name
         self.email = email
         self.profile_pic = profile_pic
-
-    dbconfig = {"host": siteInfo.databasehost(),
-                "user": siteInfo.databaseuser(),
-                "password": siteInfo.databasepassword(),
-                "database": siteInfo.database, }
 
     @staticmethod
     def get(user_id):
