@@ -463,17 +463,18 @@ def callback(user1=None):
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
+        level = 1
     else:
         return "User email not available or not verified by Google.", 400
     # Create a user in your db with the information provided
     # by Google
     user1 = user.User(
-        id_=unique_id, name=users_name, email=users_email, profile_pic=picture
+        id_=unique_id, name=users_name, email=users_email, profile_pic=picture, access_level=level
     )
 
     # Doesn't exist? Add it to the database.
     if not user.User.get(unique_id):
-        user.User.create(unique_id, users_name, users_email, picture)
+        user.User.create(unique_id, users_name, users_email, picture, level)
 
     # Begin user session by logging the user in
     login_user(user1)
