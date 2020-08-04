@@ -91,6 +91,7 @@ def saveData(table, args):
 
 
 @app.route("/Tasks", methods=["POST"])
+@login_required
 def task_form():
     global numTasks
     global codeTasks
@@ -157,6 +158,7 @@ def task_form():
 
 
 @app.route("/Tasks", methods=["GET"])
+@login_required
 def task_page():  # Returns html
     global codeTasks
     teamClaim = request.args.get("claim", '')
@@ -312,6 +314,7 @@ def taskPage(team, taskID):
 
 
 @app.route("/Updates", methods=["GET", "POST"])
+@login_required
 def updates_page(): # Returns HTML
     tag = request.args.get("tag", '')
     p = []
@@ -326,6 +329,7 @@ def updates_page(): # Returns HTML
 
 
 @app.route('/Post', methods=["GET", "POST"])
+@login_required
 def post():
     global posts
     form = updateForm()
@@ -393,7 +397,7 @@ def get_google_provider_cfg():
 @app.route("/Login")
 def index():
     if current_user.is_authenticated:
-        return url_for(home_page)
+        return redirect(url_for("home_page"))
     else:
         return render_template("gSignIn.html", the_title="Sign In")
 
