@@ -1,6 +1,5 @@
 import os
 from http import client
-
 import mysql
 import json
 import requests
@@ -16,9 +15,9 @@ from flask_wtf import FlaskForm
 from oauthlib.oauth2 import WebApplicationClient
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-
 import user
 import siteInfo
+import taskpage
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -34,11 +33,12 @@ posts = []
 numTasks = 0
 codeTasks = []
 
-#Calls for data base configuration
+# Calls for data base configuration
 dbconfig = {"host": siteInfo.databasehost(),
             "user": siteInfo.databaseuser(),
             "password": siteInfo.databasepassword(),
             "database": siteInfo.database(), }
+
 
 # Code for Webpages
 @app.route("/FAQ")
@@ -161,147 +161,9 @@ def task_form():
 @login_required
 def task_page():  # Returns html
     if current_user.access_level == None:
-        global codeTasks
-        teamClaim = request.args.get("claim", '')
-        taskID = request.args.get("id", '')
-
-        codeTasks = []
-        codeDB = getData("codeTasks")
-
-        mechanicalTasks = []
-        mechanicalDB = getData("mechanicalTasks")
-
-        electricalTasks = []
-        electricalDB = getData("electricalTasks")
-
-        businessTasks = []
-        businessDB = getData("businessTasks")
-
-        for task in codeDB:
-            if not task["status"] == 3:
-                switcher = {
-                    1: "Tomato",
-                    0: "Orange",
-                    2: "MediumSeaGreen",
-                }
-                switcher2 = {
-                    1: "Claim Task",
-                    0: "Finish Task",
-                    2: "Remove Task",
-                }
-
-                color = switcher.get(task["status"], "")
-                claimText = switcher2.get(task["status"], "")
-                codeTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                  "status": task["status"]})
-
-        for task in mechanicalDB:
-            if not task["status"] == 3:
-                switcher = {
-                    1: "Tomato",
-                    0: "Orange",
-                    2: "MediumSeaGreen",
-                }
-                switcher2 = {
-                    1: "Claim Task",
-                    0: "Finish Task",
-                    2: "Remove Task",
-                }
-
-                color = switcher.get(task["status"], "")
-                claimText = switcher2.get(task["status"], "")
-                mechanicalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                        "status": task["status"]})
-
-        for task in electricalDB:
-            if not task["status"] == 3:
-                switcher = {
-                    1: "Tomato",
-                    0: "Orange",
-                    2: "MediumSeaGreen",
-                }
-                switcher2 = {
-                    1: "Claim Task",
-                    0: "Finish Task",
-                    2: "Remove Task",
-                }
-
-                color = switcher.get(task["status"], "")
-                claimText = switcher2.get(task["status"], "")
-                electricalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                        "status": task["status"]})
-
-        for task in businessDB:
-            if not task["status"] == 3:
-                switcher = {
-                    1: "Tomato",
-                    0: "Orange",
-                    2: "MediumSeaGreen",
-                }
-                switcher2 = {
-                    1: "Claim Task",
-                    0: "Finish Task",
-                    2: "Remove Task",
-                }
-
-                color = switcher.get(task["status"], "")
-                claimText = switcher2.get(task["status"], "")
-                businessTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                      "status": task["status"]})
-
-        if teamClaim == "code":
-            for task in codeTasks:
-                if task["id"] == int(taskID):
-                    switcher = {
-                        1: 0,
-                        0: 2,
-                        2: 3,
-                    }
-                    newStatus = switcher.get(task["status"], "")
-                    updateData("codeTasks", newStatus, task["id"])
-            return redirect('/Tasks#code')
-        elif teamClaim == "mechanical":
-            for task in mechanicalTasks:
-                if task["id"] == int(taskID):
-                    switcher = {
-                        1: 0,
-                        0: 2,
-                        2: 3,
-                    }
-                    newStatus = switcher.get(task["status"], "")
-                    updateData("mechanicalTasks", newStatus, task["id"])
-            return redirect('/Tasks#mechanical')
-        elif teamClaim == "electrical":
-            for task in electricalTasks:
-                if task["id"] == int(taskID):
-                    switcher = {
-                        1: 0,
-                        0: 2,
-                        2: 3,
-                    }
-                    newStatus = switcher.get(task["status"], "")
-                    updateData("electricalTasks", newStatus, task["id"])
-            return redirect('/Tasks#electrical')
-        elif teamClaim == "business":
-            for task in businessTasks:
-                if task["id"] == int(taskID):
-                    switcher = {
-                        1: 0,
-                        0: 2,
-                        2: 3,
-                    }
-                    newStatus = switcher.get(task["status"], "")
-                    updateData("businessTasks", newStatus, task["id"])
-            return redirect('/Tasks#business')
-        else:
-            return render_template("task.html",
-                                   codeTasks=sorted(codeTasks, key=lambda x: x["status"]),
-                                   mechanicalTasks=sorted(mechanicalTasks, key=lambda x: x["status"]),
-                                   electricalTasks=sorted(electricalTasks, key=lambda x: x["status"]),
-                                   businessTasks=sorted(businessTasks, key=lambda x: x["status"]),
-                                   the_title="PV Robotics Tasks")  # Hello
+        return taskpage.task_page("tasknoaccess.html")
     else:
-        return "This works somehow"
+        return taskpage.task_page("task.html")
 
 
 """@app.route('/Tasks/<team>/<taskID>')
@@ -318,7 +180,7 @@ def taskPage(team, taskID):
 
 @app.route("/Updates", methods=["GET", "POST"])
 @login_required
-def updates_page(): # Returns HTML
+def updates_page():  # Returns HTML
     tag = request.args.get("tag", '')
     p = []
     if tag == "All" or tag == "":
@@ -485,10 +347,12 @@ def callback(user1=None):
     # Send user back to homepage
     return redirect(url_for("index"))
 
-#Custom error pages
+
+# Custom error pages
 @app.errorhandler(401)
 def custom_401(error):
     return render_template("401.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True, ssl_context='adhoc')
