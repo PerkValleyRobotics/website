@@ -161,7 +161,7 @@ def task_page(webpage):
                 updateData("businessTasks", newStatus, task["id"])
         return redirect('/Tasks#business')
     else:
-        return render_template("task.html",
+        return render_template(webpage,
                                codeTasks=sorted(codeTasks, key=lambda x: x["status"]),
                                mechanicalTasks=sorted(mechanicalTasks, key=lambda x: x["status"]),
                                electricalTasks=sorted(electricalTasks, key=lambda x: x["status"]),

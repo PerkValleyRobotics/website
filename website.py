@@ -160,7 +160,7 @@ def task_form():
 @app.route("/Tasks", methods=["GET"])
 @login_required
 def task_page():  # Returns html
-    if current_user.access_level == None:
+    if current_user.access_level is None:
         return taskpage.task_page("tasknoaccess.html")
     else:
         return taskpage.task_page("task.html")
