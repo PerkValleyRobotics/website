@@ -482,6 +482,10 @@ def callback(user1=None):
     # Send user back to homepage
     return redirect(url_for("index"))
 
+#Custom error pages
+@app.errorhandler(401)
+def custom_401(error):
+    return render_template("401.html")
 
 if __name__ == "__main__":
     app.run(debug=True, ssl_context='adhoc')
