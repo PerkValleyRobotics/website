@@ -3,7 +3,7 @@ from http import client
 import mysql
 import json
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, json
+from flask import Flask, render_template, request, redirect, url_for, flash, json, abort
 from flask_login import (
     LoginManager,
     current_user,
@@ -234,6 +234,19 @@ def privacy():  # Returns html
 @app.route("/UnderConstruction")
 def under_construction():  # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
+
+
+@app.route("/Control")
+@login_required
+def control():  # Returns html
+    if current_user.access_level == 3:
+        users = []
+        userdb = getData("user")
+        for people in userdb:
+            users.append({"id": people["id"], "name": people["name"], "email": people["email"], "access_level": people["access_level"]})
+        return render_template("control.html", users = users)
+    else:
+        abort(404)
 
 
 # Code for Logining in a user
