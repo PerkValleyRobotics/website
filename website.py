@@ -160,7 +160,7 @@ def task_form():
 @app.route("/Tasks", methods=["GET"])
 @login_required
 def task_page():  # Returns html
-    if current_user[4] == None:
+    if current_user.access_level == None:
         global codeTasks
         teamClaim = request.args.get("claim", '')
         taskID = request.args.get("id", '')
