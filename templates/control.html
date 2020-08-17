@@ -98,6 +98,7 @@
                         <form method="POST">
                             <input type="hidden" name="userID" value={{user.id}}>
                             <input type="hidden" name="changeType" value="deleteUser">
+                            <input type="hidden" name="access" value={{ user.access_level }}>
                             <input type="submit" value="Delete User">
                          </form>
                     </div>

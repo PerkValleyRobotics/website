@@ -112,7 +112,8 @@ def getuserData(id):
 def deleteuser(id):
     database = mysql.connector.connect(**dbconfig)
     cursor = database.cursor()
-    cursor.execute("delete from user where id = " + str(id))
+    cursor.execute("DELETE FROM user WHERE id = " + str(id))
+    database.commit()
     cursor.close()
     database.close()
 
