@@ -1,10 +1,9 @@
 import os
 from http import client
-
 import mysql
 import json
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, json
+from flask import Flask, render_template, request, redirect, url_for, flash, json, abort
 from flask_login import (
     LoginManager,
     current_user,
@@ -16,9 +15,9 @@ from flask_wtf import FlaskForm
 from oauthlib.oauth2 import WebApplicationClient
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-
 import user
 import siteInfo
+import taskpage
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -34,11 +33,12 @@ posts = []
 numTasks = 0
 codeTasks = []
 
-#Calls for data base configuration
+# Calls for data base configuration
 dbconfig = {"host": siteInfo.databasehost(),
             "user": siteInfo.databaseuser(),
             "password": siteInfo.databasepassword(),
             "database": siteInfo.database(), }
+
 
 # Code for Webpages
 @app.route("/FAQ")
@@ -89,6 +89,33 @@ def saveData(table, args):
     cursor.close()
     database.close()
 
+def taskupdateData(id, level):
+    database = mysql.connector.connect(**dbconfig)
+    sql = "UPDATE user SET access_level = " + str(level) + " WHERE id = " + str(id)
+
+    cursor = database.cursor()
+    cursor.execute(sql)
+
+    database.commit()
+    cursor.close()
+    database.close()
+
+def getuserData(id):
+    database = mysql.connector.connect(**dbconfig)
+    cursor = database.cursor(dictionary=True)
+    cursor.execute("select " + str(id) + " from user")
+    req = cursor.fetchall()
+    cursor.close()
+    database.close()
+    return req
+
+def deleteuser(id):
+    database = mysql.connector.connect(**dbconfig)
+    cursor = database.cursor()
+    cursor.execute("DELETE FROM user WHERE id = " + str(id))
+    database.commit()
+    cursor.close()
+    database.close()
 
 @app.route("/Tasks", methods=["POST"])
 @login_required
@@ -160,145 +187,10 @@ def task_form():
 @app.route("/Tasks", methods=["GET"])
 @login_required
 def task_page():  # Returns html
-    global codeTasks
-    teamClaim = request.args.get("claim", '')
-    taskID = request.args.get("id", '')
-
-    codeTasks = []
-    codeDB = getData("codeTasks")
-
-    mechanicalTasks = []
-    mechanicalDB = getData("mechanicalTasks")
-
-    electricalTasks = []
-    electricalDB = getData("electricalTasks")
-
-    businessTasks = []
-    businessDB = getData("businessTasks")
-
-    for task in codeDB:
-        if not task["status"] == 3:
-            switcher = {
-                1: "Tomato",
-                0: "Orange",
-                2: "MediumSeaGreen",
-            }
-            switcher2 = {
-                1: "Claim Task",
-                0: "Finish Task",
-                2: "Remove Task",
-            }
-
-            color = switcher.get(task["status"], "")
-            claimText = switcher2.get(task["status"], "")
-            codeTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                              "status": task["status"]})
-
-    for task in mechanicalDB:
-        if not task["status"] == 3:
-            switcher = {
-                1: "Tomato",
-                0: "Orange",
-                2: "MediumSeaGreen",
-            }
-            switcher2 = {
-                1: "Claim Task",
-                0: "Finish Task",
-                2: "Remove Task",
-            }
-
-            color = switcher.get(task["status"], "")
-            claimText = switcher2.get(task["status"], "")
-            mechanicalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                    "status": task["status"]})
-
-    for task in electricalDB:
-        if not task["status"] == 3:
-            switcher = {
-                1: "Tomato",
-                0: "Orange",
-                2: "MediumSeaGreen",
-            }
-            switcher2 = {
-                1: "Claim Task",
-                0: "Finish Task",
-                2: "Remove Task",
-            }
-
-            color = switcher.get(task["status"], "")
-            claimText = switcher2.get(task["status"], "")
-            electricalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                    "status": task["status"]})
-
-    for task in businessDB:
-        if not task["status"] == 3:
-            switcher = {
-                1: "Tomato",
-                0: "Orange",
-                2: "MediumSeaGreen",
-            }
-            switcher2 = {
-                1: "Claim Task",
-                0: "Finish Task",
-                2: "Remove Task",
-            }
-
-            color = switcher.get(task["status"], "")
-            claimText = switcher2.get(task["status"], "")
-            businessTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                  "status": task["status"]})
-
-    if teamClaim == "code":
-        for task in codeTasks:
-            if task["id"] == int(taskID):
-                switcher = {
-                    1: 0,
-                    0: 2,
-                    2: 3,
-                }
-                newStatus = switcher.get(task["status"], "")
-                updateData("codeTasks", newStatus, task["id"])
-        return redirect('/Tasks#code')
-    elif teamClaim == "mechanical":
-        for task in mechanicalTasks:
-            if task["id"] == int(taskID):
-                switcher = {
-                    1: 0,
-                    0: 2,
-                    2: 3,
-                }
-                newStatus = switcher.get(task["status"], "")
-                updateData("mechanicalTasks", newStatus, task["id"])
-        return redirect('/Tasks#mechanical')
-    elif teamClaim == "electrical":
-        for task in electricalTasks:
-            if task["id"] == int(taskID):
-                switcher = {
-                    1: 0,
-                    0: 2,
-                    2: 3,
-                }
-                newStatus = switcher.get(task["status"], "")
-                updateData("electricalTasks", newStatus, task["id"])
-        return redirect('/Tasks#electrical')
-    elif teamClaim == "business":
-        for task in businessTasks:
-            if task["id"] == int(taskID):
-                switcher = {
-                    1: 0,
-                    0: 2,
-                    2: 3,
-                }
-                newStatus = switcher.get(task["status"], "")
-                updateData("businessTasks", newStatus, task["id"])
-        return redirect('/Tasks#business')
+    if current_user.access_level is None:
+        return taskpage.task_page("tasknoaccess.html")
     else:
-        return render_template("task.html",
-                               codeTasks=sorted(codeTasks, key=lambda x: x["status"]),
-                               mechanicalTasks=sorted(mechanicalTasks, key=lambda x: x["status"]),
-                               electricalTasks=sorted(electricalTasks, key=lambda x: x["status"]),
-                               businessTasks=sorted(businessTasks, key=lambda x: x["status"]),
-                               the_title="PV Robotics Tasks")  # Hello
+        return taskpage.task_page("task.html")
 
 
 """@app.route('/Tasks/<team>/<taskID>')
@@ -315,7 +207,7 @@ def taskPage(team, taskID):
 
 @app.route("/Updates", methods=["GET", "POST"])
 @login_required
-def updates_page(): # Returns HTML
+def updates_page():  # Returns HTML
     tag = request.args.get("tag", '')
     p = []
     if tag == "All" or tag == "":
@@ -369,6 +261,44 @@ def privacy():  # Returns html
 @app.route("/UnderConstruction")
 def under_construction():  # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
+
+
+@app.route("/Control", methods=["GET", "POST"])
+@login_required
+def control():  # Returns html
+    if current_user.access_level == 3:
+        if request.method == "POST":
+            change = request.form["changeType"]
+            userID = request.form["userID"]
+            currentLevel = request.form["access"]
+            if change == "accessUp":
+                if currentLevel == "None":
+                    taskupdateData(userID, 1)
+                    return redirect(url_for("control"))
+                else:
+                    taskupdateData(userID, (int(currentLevel) + 1))
+                    return redirect(url_for("control"))
+            elif change == "accessDown":
+                if currentLevel == "None":
+                    return redirect(url_for("control"))
+                elif int(currentLevel) == 1:
+                    taskupdateData(userID, "NULL")
+                    return redirect(url_for("control"))
+                else:
+                    taskupdateData(userID, (int(currentLevel) - 1))
+                    return redirect(url_for("control"))
+            elif change == "deleteUser":
+                deleteuser(userID)
+                return redirect(url_for("control"))
+            return redirect(url_for("control"))
+        else:
+            users = []
+            userdb = getData("user")
+            for people in userdb:
+                users.append({"id": people["id"], "name": people["name"], "email": people["email"], "access_level": people["access_level"]})
+            return render_template("control.html", users = users)
+    else:
+        abort(404)
 
 
 # Code for Logining in a user
@@ -463,23 +393,30 @@ def callback(user1=None):
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
+        level = 1
     else:
         return "User email not available or not verified by Google.", 400
     # Create a user in your db with the information provided
     # by Google
     user1 = user.User(
-        id_=unique_id, name=users_name, email=users_email, profile_pic=picture
+        id_=unique_id, name=users_name, email=users_email, profile_pic=picture, access_level=level
     )
 
     # Doesn't exist? Add it to the database.
     if not user.User.get(unique_id):
-        user.User.create(unique_id, users_name, users_email, picture)
+        user.User.create(unique_id, users_name, users_email, picture, level)
 
     # Begin user session by logging the user in
     login_user(user1)
 
     # Send user back to homepage
     return redirect(url_for("index"))
+
+
+# Custom error pages
+@app.errorhandler(401)
+def custom_401(error):
+    return render_template("401.html")
 
 
 if __name__ == "__main__":
