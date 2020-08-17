@@ -89,6 +89,26 @@ def saveData(table, args):
     cursor.close()
     database.close()
 
+def taskupdateData(id, level):
+    database = mysql.connector.connect(**dbconfig)
+    sql = "UPDATE user SET access_level = " + str(level) + " WHERE id = " + str(id)
+
+    cursor = database.cursor()
+    cursor.execute(sql)
+
+    database.commit()
+    cursor.close()
+    database.close()
+
+def getuserData(id):
+    database = mysql.connector.connect(**dbconfig)
+    cursor = database.cursor(dictionary=True)
+    cursor.execute("select " + str(id) + " from user")
+    req = cursor.fetchall()
+    cursor.close()
+    database.close()
+    return req
+
 
 @app.route("/Tasks", methods=["POST"])
 @login_required
@@ -241,9 +261,26 @@ def under_construction():  # Returns html
 def control():  # Returns html
     if current_user.access_level == 3:
         if request.method == "POST":
-
-
-            return "temp"
+            change = request.form["changeType"]
+            userID = request.form["userID"]
+            currentLevel = request.form["access"]
+            if change == "accessUp":
+                if currentLevel is None:
+                    taskupdateData(userID, 1)
+                    return redirect(url_for("control"))
+                else:
+                    taskupdateData(userID, (int(currentLevel) + 1))
+                    return redirect(url_for("control"))
+            elif change == "accessDown":
+                if currentLevel is None:
+                    return redirect(url_for("control"))
+                elif int(currentLevel) == 1:
+                    taskupdateData(userID, "NULL")
+                    return redirect(url_for("control"))
+                else:
+                    taskupdateData(userID, (int(currentLevel) - 1))
+                    return redirect(url_for("control"))
+            return redirect(url_for("control"))
         else:
             users = []
             userdb = getData("user")

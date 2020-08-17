@@ -88,13 +88,15 @@
                 <button onclick="myFunction()" class="dropbtn">Dropdown</button>
                     <div id="myDropdown" class="dropdown-content">
                         <form method="POST">
-                            <input type="hidden" name="userID" value={{user.id}}>
+                            <input type="hidden" name="userID" value= {{ user.id }}>
                             <input type="hidden" name="changeType" value="accessUp">
+                            <input type="hidden" name="access" value={{ user.access_level }}>
                             <input type="submit" value="Access Level Increase">
                          </form>
                         <form method="POST">
-                            <input type="hidden" name="userID" value={{user.id}}>
+                            <input type="hidden" name="userID" value={{ user.id }}>
                             <input type="hidden" name="changeType" value="accessDown">
+                            <input type="hidden" name="access" value={{ user.access_level }}>
                             <input type="submit" value="Access Level Decrease">
                          </form>
                         <form method="POST">
