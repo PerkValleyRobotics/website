@@ -4,16 +4,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 .dropbtn {
-  background-color: #3498DB;
+  background-color: #4CAF50;
   color: white;
   padding: 16px;
   font-size: 16px;
   border: none;
-  cursor: pointer;
-}
-
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
 }
 
 .dropdown {
@@ -26,21 +21,22 @@
   position: absolute;
   background-color: #f1f1f1;
   min-width: 160px;
-  overflow: auto;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
 }
 
-.dropdown-content input {
+.dropdown-content a {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
 }
 
-.dropdown a:hover {background-color: #ddd;}
+.dropdown-content a:hover {background-color: #ddd;}
 
-.show {display: block;}
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
 
 #customers {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -85,8 +81,8 @@
             <td>{{ user.access_level }}</td>
             <td>
                 <div class="dropdown">
-                <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-                    <div id="myDropdown" class="dropdown-content">
+                  <button class="dropbtn">Dropdown</button>
+                    <div class="dropdown-content">
                         <form method="POST">
                             <input type="hidden" name="userID" value= {{ user.id }}>
                             <input type="hidden" name="changeType" value="accessUp">
@@ -114,11 +110,6 @@
 
 </body>
 <script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function(event) {

@@ -109,6 +109,12 @@ def getuserData(id):
     database.close()
     return req
 
+def deleteuser(id):
+    database = mysql.connector.connect(**dbconfig)
+    cursor = database.cursor()
+    cursor.execute("delete from user where id = " + str(id))
+    cursor.close()
+    database.close()
 
 @app.route("/Tasks", methods=["POST"])
 @login_required
@@ -265,14 +271,14 @@ def control():  # Returns html
             userID = request.form["userID"]
             currentLevel = request.form["access"]
             if change == "accessUp":
-                if currentLevel is None:
+                if currentLevel == "None":
                     taskupdateData(userID, 1)
                     return redirect(url_for("control"))
                 else:
                     taskupdateData(userID, (int(currentLevel) + 1))
                     return redirect(url_for("control"))
             elif change == "accessDown":
-                if currentLevel is None:
+                if currentLevel == "None":
                     return redirect(url_for("control"))
                 elif int(currentLevel) == 1:
                     taskupdateData(userID, "NULL")
@@ -280,6 +286,9 @@ def control():  # Returns html
                 else:
                     taskupdateData(userID, (int(currentLevel) - 1))
                     return redirect(url_for("control"))
+            elif change == "deleteUser":
+                deleteuser(userID)
+                return redirect(url_for("control"))
             return redirect(url_for("control"))
         else:
             users = []
