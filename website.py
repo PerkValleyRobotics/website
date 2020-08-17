@@ -236,15 +236,20 @@ def under_construction():  # Returns html
     return render_template("underConstruction.html", the_title="Work in Progress")
 
 
-@app.route("/Control")
+@app.route("/Control", methods=["GET", "POST"])
 @login_required
 def control():  # Returns html
     if current_user.access_level == 3:
-        users = []
-        userdb = getData("user")
-        for people in userdb:
-            users.append({"id": people["id"], "name": people["name"], "email": people["email"], "access_level": people["access_level"]})
-        return render_template("control.html", users = users)
+        if request.method == "POST":
+
+
+            return "temp"
+        else:
+            users = []
+            userdb = getData("user")
+            for people in userdb:
+                users.append({"id": people["id"], "name": people["name"], "email": people["email"], "access_level": people["access_level"]})
+            return render_template("control.html", users = users)
     else:
         abort(404)
 
