@@ -13,7 +13,7 @@
             <ul style="height: auto; width: 40vw;">
                 {% for task in codeTasks %}
 
-                <li style="color: {{ task.color }}; font-size:20px; float:none; display:block;"> {{ task.task }}<a href="/Tasks?claim=code&id={{ task.id }}" style="font-size:15px; float:right; clear: right; padding: 5px; margin: 0px;">{{ task.claimText }}</a></li>
+                <li style="color: {{ task.color }}; font-size:20px; float:none; display:block;"> {{ task.task }} {{ task.claimUser }}<a href="/Tasks?claim=code&id={{ task.id }}" style="font-size:15px; float:right; clear: right; padding: 5px; margin: 0px;">{{ task.claimText }}</a></li>
 
                 {% endfor %}
             </ul>

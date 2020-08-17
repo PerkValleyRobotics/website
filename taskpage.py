@@ -60,7 +60,7 @@ def task_page(webpage):
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
             codeTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                              "status": task["status"]})
+                              "status": task["status"], "claimUser": task["claimUser"]})
 
     for task in mechanicalDB:
         if not task["status"] == 3:
@@ -78,7 +78,7 @@ def task_page(webpage):
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
             mechanicalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                    "status": task["status"]})
+                                    "status": task["status"], "claimUser": task["claimUser"]})
 
     for task in electricalDB:
         if not task["status"] == 3:
@@ -96,7 +96,7 @@ def task_page(webpage):
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
             electricalTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                    "status": task["status"]})
+                                    "status": task["status"], "claimUser": task["claimUser"]})
 
     for task in businessDB:
         if not task["status"] == 3:
@@ -114,7 +114,7 @@ def task_page(webpage):
             color = switcher.get(task["status"], "")
             claimText = switcher2.get(task["status"], "")
             businessTasks.append({"id": task["id"], "task": task["task"], "color": color, "claimText": claimText,
-                                  "status": task["status"]})
+                                  "status": task["status"], "claimUser": task["claimUser"]})
 
     if teamClaim == "code":
         for task in codeTasks:
