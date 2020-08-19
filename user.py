@@ -38,13 +38,13 @@ class User(UserMixin):
         return user
 
     @staticmethod
-    def create(id_, name, email, profile_pic, access_level):
+    def create(id_, name, email, profile_pic):
         conn = mysql.connector.connect(**dbconfig)
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO user (id, name, email, profile_pic, access_level) "
-            "VALUES (%s, %s, %s, %s, %s)",
-            (id_, name, email, profile_pic, access_level),
+            "INSERT INTO user (id, name, email, profile_pic) "
+            "VALUES (%s, %s, %s, %s)",
+            (id_, name, email, profile_pic),
         )
         conn.commit()
         cursor.close()

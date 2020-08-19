@@ -392,7 +392,7 @@ def callback(user1=None):
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]
+        users_name = userinfo_response.json()["name"]
         level = 1
     else:
         return "User email not available or not verified by Google.", 400
