@@ -5,15 +5,13 @@
     <center>
         <h2>Meet our Members!</h2>
         <div class="BODY" style="text-align:left;"id="code">
-            <h2 style="background: DodgerBlue; padding: 10px; color: lightgray; text-align: center; width: 4.5ch;"><b>Code</b></h2>
             <form method="POST" action="" novalidate>
-                <label name="code"><u><b>Add A Member</b></u></label>
-                <input type="text" name="code" >
+                <label name="member"><u><b>Add A Member</b></u></label>
+                <input type="text" name="member" >
             </form>
             <ul style="height: auto; width: 40vw;">
-                {% for member in memberList %}
-
-                <li style="color: {{ task.color }}; font-size:20px; float:none; display:block;"> {{ task.task }}<a href="/Tasks?claim=code&id={{ task.id }}" style="font-size:15px; float:right; clear: right; padding: 5px; margin: 0px;">{{ task.claimText }}</a></li>
+                {% for person in members %}
+                <li style="font-size:20px; float:none; display:block;"> {{ person.name }}</li>
                 {% endfor %}
             </ul>
         </div>
