@@ -89,6 +89,19 @@ def saveData(table, args):
     cursor.close()
     database.close()
 
+
+def saveDataGen(table, location, val):
+    database = mysql.connector.connect(**dbconfig)
+    sql = "INSERT INTO " + table + " (" + location + ") VALUES (" + val + ")"
+
+    cursor = database.cursor()
+    cursor.execute(sql)
+
+    database.commit()
+    cursor.close()
+    database.close()
+
+
 def taskupdateData(id, level):
     database = mysql.connector.connect(**dbconfig)
     sql = "UPDATE user SET access_level = " + str(level) + " WHERE id = " + str(id)
@@ -100,6 +113,7 @@ def taskupdateData(id, level):
     cursor.close()
     database.close()
 
+
 def getuserData(id):
     database = mysql.connector.connect(**dbconfig)
     cursor = database.cursor(dictionary=True)
@@ -109,6 +123,7 @@ def getuserData(id):
     database.close()
     return req
 
+
 def deleteuser(id):
     database = mysql.connector.connect(**dbconfig)
     cursor = database.cursor()
@@ -116,6 +131,7 @@ def deleteuser(id):
     database.commit()
     cursor.close()
     database.close()
+
 
 @app.route("/Tasks", methods=["POST"])
 @login_required
@@ -295,10 +311,29 @@ def control():  # Returns html
             users = []
             userdb = getData("user")
             for people in userdb:
-                users.append({"id": people["id"], "name": people["name"], "email": people["email"], "access_level": people["access_level"]})
-            return render_template("control.html", users = users)
+                users.append({"id": people["id"], "name": people["name"], "email": people["email"],
+                              "access_level": people["access_level"]})
+            return render_template("control.html", users=users)
     else:
         abort(404)
+
+
+@app.route("/Members", methods=["GET", "POST"])
+@login_required
+def members():  # Returns HTML
+    members = []
+    membersdb = getData("memberList")
+    for people in membersdb:
+        members.append({"id": people["id"], "name": people["name"]})
+    if current_user.access_level >= 2:
+        if request.method == "POST":
+            namedata = "\"" + request.form["member"] + "\""
+            saveDataGen("memberList", "name", namedata)
+            return redirect(url_for("members"))
+        else:
+            return render_template("Members.html", members=members, the_title="Members")
+    else:
+        return render_template("MembersView.html", members=members, the_title="Members")
 
 
 # Code for Logining in a user
