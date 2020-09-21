@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<class>
+    <center>
+        <h2>Meet our Members!</h2>
+        <div class="BODY" style="text-align:left;"id="code">
+            <ul style="height: auto; width: 40vw;">
+                {% for person in members %}
+                <li style="font-size:20px; float:none; display:block;"> {{ person.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </center>
+</class>
+
+{% endblock %}

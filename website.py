@@ -319,6 +319,7 @@ def control():  # Returns html
 
 
 @app.route("/Members", methods=["GET", "POST"])
+@login_required
 def members():  # Returns HTML
     members = []
     membersdb = getData("memberList")
@@ -332,7 +333,7 @@ def members():  # Returns HTML
         else:
             return render_template("Members.html", members=members, the_title="Members")
     else:
-        return "temp"
+        return render_template("MembersView.html", members=members, the_title="Members")
 
 
 # Code for Logining in a user
