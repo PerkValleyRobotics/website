@@ -300,6 +300,15 @@ def control():  # Returns html
     else:
         abort(404)
 
+@app.route("/Members", methods=["GET", "POST"])
+def members(): # Returns HTML
+    if current_user.access_level >= 2:
+        if request.method == "POST":
+            return "temp"
+        else:
+            return "temp"
+    else:
+        return "temp"
 
 # Code for Logining in a user
 login_manager = LoginManager()
