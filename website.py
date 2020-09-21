@@ -90,6 +90,18 @@ def saveData(table, args):
     database.close()
 
 
+def saveDataGen(table, location, val):
+    database = mysql.connector.connect(**dbconfig)
+    sql = "INSERT INTO " + table + " (" + location + ") VALUES (" + val + ")"
+
+    cursor = database.cursor()
+    cursor.execute(sql)
+
+    database.commit()
+    cursor.close()
+    database.close()
+
+
 def taskupdateData(id, level):
     database = mysql.connector.connect(**dbconfig)
     sql = "UPDATE user SET access_level = " + str(level) + " WHERE id = " + str(id)
@@ -314,7 +326,9 @@ def members():  # Returns HTML
         members.append({"id": people["id"], "name": people["name"]})
     if current_user.access_level >= 2:
         if request.method == "POST":
-            return "temp"
+            namedata = "\"" + request.form["member"] + "\""
+            saveDataGen("memberList", "name", namedata)
+            return redirect(url_for("members"))
         else:
             return render_template("Members.html", members=members, the_title="Members")
     else:
