@@ -5,10 +5,6 @@
     <center>
         <h2>Updates</h2>
         <div class="BODY" style="text-align:left;"id="code">
-            <form method="POST" action="" novalidate>
-                <label name="message"><u><b>Create a new Post</b></u></label>
-                <input type="text" name="member" >
-            </form>
             <ul style="height: auto; width: 40vw;">
                 {% for update in updates %}
                 <li style="font-size:20px; float:none; display:block;"> {{ update.message }}</li>
