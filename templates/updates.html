@@ -3,25 +3,14 @@
 {% block body %}
 <class>
     <center>
-        <div class="BODY" style="width: 10%; padding: 10px; margin: 10px;">
-            <p><a href = "/Post">Post</a></p>
-            <select onchange="window.location.href=this.options[this.selectedIndex].value;">
-                <option value="/Updates?tag=All">Choose a Filter</option>
-                <option value="/Updates?tag=All">Remove Filter</option>
-                <option value="/Updates?tag=Code">Code</option>
-                <option value="/Updates?tag=Mechanical">Mechanical</option>
-                <option value="/Updates?tag=Electrical">Electrical</option>
-                <option value="/Updates?tag=Business">Business</option>
-                <option value="/Updates?tag=Other">Other</option>
-            </select>
+        <h2>Updates</h2>
+        <div class="BODY" style="text-align:left;"id="code">
+            <ul style="height: auto; width: 40vw;">
+                {% for update in updates %}
+                <li style="font-size:20px; float:none; display:block;"> {{ update.message }}</li>
+                {% endfor %}
+            </ul>
         </div>
-        {% for post in posts %}
-
-        <div class="BODY" style="text-align: left;">
-            <p style="font-size: 15px; line-height:5px; background:{{ post.color }}; padding:10px; width: {{ post.ch }}ch; color:black; text-align: center;"><b>{{ post.tag }}</b></p>
-            <h1 style="font-size: 50px; line-height:10px;">{{ post.author }}</h1> <br><h2 style="font-size: 30px; line-height:10px;">{{ post.body }}</h2>
-        </div>
-        {% endfor %}
     </center>
 </class>
 
