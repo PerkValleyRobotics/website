@@ -300,7 +300,7 @@ def updates():  # Returns HTML
         updates.append({"id": update["id"], "name": update["message"]})
     if current_user.access_level >= 2:
         if request.method == "POST":
-            messagedata = "\"" + request.form["updates"] + "\""
+            messagedata = "\"" + request.form["update"] + "\""
             saveDataGen("updates", "message", messagedata)
             return updates.htmledirect(url_for("updates"))
         else:
