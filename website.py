@@ -297,7 +297,7 @@ def updates():  # Returns HTML
     updates = []
     updatesdb = getData("updates")
     for update in updatesdb:
-        updates.append({"id": update["id"], "name": update["name"]})
+        updates.append({"id": update["id"], "name": update["message"]})
     if current_user.access_level >= 2:
         if request.method == "POST":
             messagedata = "\"" + request.form["updates"] + "\""
