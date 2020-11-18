@@ -220,50 +220,6 @@ def taskPage(team, taskID):
 
     return render_template('TaskPage.html', page=page, updates=updates, the_title=page["task"])"""
 
-
-@app.route("/Updates", methods=["GET", "POST"])
-@login_required
-def updates_page():  # Returns HTML
-    tag = request.args.get("tag", '')
-    p = []
-    if tag == "All" or tag == "":
-        p = posts
-    else:
-        for i in range(len(posts)):
-            if posts[i]["tag"] == tag:
-                p.append(posts[i])
-
-    return render_template('updates.html', posts=p, the_title="PV Robotics Updates")
-
-
-@app.route('/Post', methods=["GET", "POST"])
-@login_required
-def post():
-    global posts
-    form = updateForm()
-    if form.validate_on_submit():
-        flash('Posted')
-        tag = request.form.get('tag')
-
-        def switch(argument):
-            switcher = {
-                "Code": "DodgerBlue",
-                "Mechanical": "Tomato",
-                "Electrical": "Orange",
-                "Business": "MediumSeaGreen",
-                "Other": "grey",
-            }
-            return switcher.get(argument, "white")
-
-        color = switch(tag)
-        ch = len(tag) + .5
-        posts.insert(0,
-                     {"author": form.name.data, "body": form.text.data, "tag": request.form.get('tag'), "color": color,
-                      "ch": ch})
-        return redirect('/Updates')
-    return render_template('post.html', title='Sign In', form=form)
-
-
 @app.route("/CodeTeamBestTeam")
 def code_best():  # Returns html
     return render_template("home.html", the_title="Code Team Best Team")
@@ -334,6 +290,23 @@ def members():  # Returns HTML
             return render_template("Members.html", members=members, the_title="Members")
     else:
         return render_template("MembersView.html", members=members, the_title="Members")
+
+@app.route("/Updates", methods=["GET", "POST"])
+@login_required
+def updates():  # Returns HTML
+    updates = []
+    updatesdb = getData("updates")
+    for update in updatesdb:
+        updates.append({"id": update["id"], "message": update["message"]})
+    if current_user.access_level >= 2:
+        if request.method == "POST":
+            messagedata = "\"" + request.form["message"] + "\""
+            saveDataGen("updates", "message", messagedata)
+            return redirect(url_for("updates"))
+        else:
+            return render_template("updates.html", updates=updates, the_title="Updates")
+    else:
+        return render_template("updatesView.html", updates=updates, the_title="Updates")
 
 
 # Code for Logining in a user
