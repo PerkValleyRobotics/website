@@ -297,16 +297,16 @@ def updates():  # Returns HTML
     updates = []
     updatesdb = getData("updates")
     for update in updatesdb:
-        updates.append({"id": update["id"], "name": update["message"]})
+        updates.append({"id": update["id"], "message": update["message"]})
     if current_user.access_level >= 2:
         if request.method == "POST":
-            messagedata = "\"" + request.form["update"] + "\""
+            messagedata = "\"" + request.form["message"] + "\""
             saveDataGen("updates", "message", messagedata)
-            return updates.htmledirect(url_for("updates"))
+            return redirect(url_for("updates"))
         else:
-            return render_template("updates.html", members=updates, the_title="Updates")
+            return render_template("updates.html", updates=updates, the_title="Updates")
     else:
-        return render_template("updatesView.html", members=updates, the_title="Updates")
+        return render_template("updatesView.html", updates=updates, the_title="Updates")
 
 
 # Code for Logining in a user
