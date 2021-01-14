@@ -281,6 +281,7 @@ def members():  # Returns HTML
     membersdb = getData("memberList")
     for people in membersdb:
         members.append({"id": people["id"], "name": people["name"]})
+    members.sorted()
     if current_user.access_level >= 2:
         if request.method == "POST":
             namedata = "\"" + request.form["member"] + "\""
@@ -428,4 +429,4 @@ def custom_401(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, ssl_context='adhoc')
+    app.run(debug=True,)
