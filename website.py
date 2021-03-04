@@ -229,6 +229,21 @@ def code_best():  # Returns html
 def privacy():  # Returns html
     return render_template("privacy.html", the_title="Privacy Policy")
 
+@app.route("/Code")
+def code():  # Returns html
+    return render_template("code.html", the_title="Privacy Policy")
+
+@app.route("/Electrical")
+def electrical():  # Returns html
+    return render_template("electrical.html", the_title="Privacy Policy")
+
+@app.route("/Mechanical")
+def mechanical():  # Returns html
+    return render_template("mechanical.html", the_title="Privacy Policy")
+
+@app.route("/Business")
+def business():  # Returns html
+    return render_template("business.html", the_title="Privacy Policy")
 
 @app.route("/UnderConstruction")
 def under_construction():  # Returns html
